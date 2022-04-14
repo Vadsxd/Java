@@ -56,10 +56,7 @@ public class Main2 {
             } else {
                 System.out.println("Unknown command!");
             }
-            for(int i = 0; i < database.get_size(); i++) {
-                System.out.print(database.get(i) + " ");
-            }
-            System.out.println();
+            System.out.println(Arrays.toString(database.get_all()));
         }
         
     }
