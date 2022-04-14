@@ -1,53 +1,38 @@
 import java.io.*;
 import java.util.*;
 
-class ArrayList<T> {
-    private final int INIT_SIZE = 10;
-    private Object[] array = new Object[INIT_SIZE];
-    private int pointer = 0;
+class DataBase{
+    private final List<Long> data = new ArrayList<>();
 
-    public void add(T value) {
-        if(pointer == array.length-1)
-            resize(array.length*2);
-        array[pointer++] = value;
+    public void add(long value){
+        data.add(value);
     }
 
-    public T get(int index) {
-        return (T) array[index];
-    }
-
-    public void remove(int index) {
-        if (pointer - index >= 0) System.arraycopy(array, index + 1, array, index, pointer - index);
-        array[pointer] = null;
-        pointer--;
-        int CUT_RATE = 4;
-        if (array.length > INIT_SIZE && pointer < array.length / CUT_RATE) {
-            resize(array.length / 2);
-        }
+    public void remove(int index){
+        data.remove(index);
     }
 
     public void remove_all(){
-        for(int i = 0; i < pointer; i++){
-            array[i] = null;
-        }
-        pointer = 0;
+        data.clear();
     }
 
-    public int size() {
-        return pointer;
+    public int get_size(){
+        return data.size();
     }
 
-    private void resize(int newLength) {
-        Object[] newArray = new Object[newLength];
-        System.arraycopy(array, 0, newArray, 0, pointer);
-        array = newArray;
+    public long get(int index){
+        return data.get(index);
+    }
+
+    public Object[] get_all(){
+        return data.toArray();
     }
 }
 
 public class Main2 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Long> list = new ArrayList<>();
+        DataBase database = new DataBase();
 
         while (true) {
             String command = scanner.next();
@@ -56,35 +41,35 @@ public class Main2 {
             }
             if (Objects.equals(command, "add")) {
                 long value = scanner.nextLong();
-                list.add(value);
+                database.add(value);
             } else if (Objects.equals(command, "remove")) {
                 int index = scanner.nextInt();
-                list.remove(index);
+                database.remove(index);
             } else if (Objects.equals(command, "get")) {
                 int value = scanner.nextInt();
-                System.out.println("Your value request is " + list.get(value));
+                System.out.println("Your value request is " + database.get(value));
             } else if (Objects.equals(command, "save")){
-                Save_Data(list);
+                Save_Data(database.get_all());
             } else if (Objects.equals(command, "load")){
-                list.remove_all();
-                Load_Data(list);
+                database.remove_all();
+                Load_Data(database);
             } else {
                 System.out.println("Unknown command!");
             }
-            for(int i = 0; i < list.size(); i++) {
-                System.out.print(list.get(i) + " ");
+            for(int i = 0; i < database.get_size(); i++) {
+                System.out.print(database.get(i) + " ");
             }
             System.out.println();
         }
         
     }
-    private static void Save_Data(ArrayList<Long> list) {
+    private static void Save_Data(Object[] array) {
         File file = new File("/home/vadim/IdeaProjects/Task/src/Save.txt");
         FileWriter fr = null;
         try {
             fr = new FileWriter(file);
-            for(int i = 0; i < list.size(); i++){
-                fr.write(String.valueOf(list.get(i)));
+            for (Object o : array) {
+                fr.write(String.valueOf(o));
                 fr.write("\n");
             }
         } catch (IOException e) {
@@ -99,7 +84,7 @@ public class Main2 {
         }
     }
 
-    private static void Load_Data(ArrayList<Long> list){
+    private static void Load_Data(DataBase database){
         try {
             FileReader fr = new FileReader("/home/vadim/IdeaProjects/Task/src/Save.txt");
             BufferedReader reader = new BufferedReader(fr);
@@ -109,7 +94,7 @@ public class Main2 {
                     break;
                 }
                 long value = Long.parseLong(line);
-                list.add(value);
+                database.add(value);
             }
         } catch (IOException e) {
             e.printStackTrace();
